@@ -1,5 +1,3 @@
-# CSCE 160
-# Prof. Kim
 # Rafa Miquel
 # Cards mini poker v.3
 
