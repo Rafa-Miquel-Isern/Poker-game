@@ -206,24 +206,19 @@ class Player:
             try:
                 more = int(input("Do you want another card? (1. Yes, 2. No): "))
                 if more == 1:
-                    # Aquí pides una carta al mazo
+                    # Draw a card from the deck
                     card = deck.dealCard()
                     if card is not None:
-                        self.getCard(card)  # Añade la carta a la mano
+                        self.getCard(card)  # Add the card to the hand
                         self.showPlayer()
                         if self.total_points > dice_value + 20:
-                            print("¡Busted! over the limit.")
+                            print("Busted! Over the limit.")
                             return True
                     else:
                         print("deck without cards.")
                         return True
                 elif more == 2:
-                    print("You decided not to take another card. Computer's Turn.")
-                    card = deck.dealCard()
-                    if card is not None:
-                        pc.getCard(card)  # Asegúrate de pasar una carta al PC
-                    else:
-                        print("deck without cards.")
+                    print("You decided not to take another card. Computer's turn.")
                     return False
                 else:
                     print("Invalid option. Please select 1 or 2.")
@@ -243,12 +238,12 @@ class Player:
                     break
             else:
                 break
+        self.showPlayer()
         print("End of PC's turn.")
           
 #--------------------------------Main-----------------------------------------
 
 myDeck = Deck()
-myDeck.show()
 
 user = Player(" ", 100)
 pc = Player("PC", 999999999999999)
@@ -260,14 +255,18 @@ my_dice.display_dice()
 while user.wallet > 0:
     user.resetPlayer()
     pc.resetPlayer()
-    myDeck = Deck()  # Crear el objeto
+    myDeck = Deck()  # Fresh deck each round
     myDeck.resetDeck()
     
     print("==================================")
     print("You have $", user.wallet)
     
     while True:
-        bet = int(input("Place a bet:"))
+        try:
+            bet = int(input("Place a bet: "))
+        except ValueError:
+            print("Please enter a whole number.")
+            continue
         if bet <= 0: 
             print("Invalid amount. Must be more than 0")
             continue
@@ -283,14 +282,28 @@ while user.wallet > 0:
     user.getCard(myDeck.dealCard()) 
     pc.getCard(myDeck.dealCard())
     
-    user.showPlayer()  # muestra la mano del usuario
-    pc.showPlayer()  # muestra la mano del PC
+    user.showPlayer()  # show the user's hand
+    pc.showPlayer()  # show the PC's hand
     
     print("Now it's your turn to decide if you want to take more cards.")
     
     if user.get_more_cards(myDeck, my_dice.value):
         print("You exceeded the limit and busted!")
         print("You lost the round.")
+        my_dice.roll()
+        my_dice.display_dice()
+        continue
+
+    # PC plays its turn against the same dice limit
+    limit = my_dice.value + 20
+    pc.pc_turn(myDeck, limit)
+
+    if pc.total_points > limit:
+        print("PC busted! You win this round!")
+        user.wallet += bet * 2
+        my_dice.roll()
+        my_dice.display_dice()
+        print(f"Your wallet balance is: ${user.wallet}")
         continue
 
     print("Your score is",user.score())
