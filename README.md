@@ -1,4 +1,4 @@
-# Mini Poker – Python Card Game
+# Mini Poker
 
 A text-based card game in Python where you play against the computer, built for
 CSCE 160 (Intro to Programming). It mixes poker-style hand scoring with a
